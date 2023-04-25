@@ -14,7 +14,7 @@ class Bojovnik:
         self.__utok = utok
         self.__obrana = obrana
         self.__kostka = kostka
-        self.sprcha = 10
+        self._zprava = ""
     
     def __str__(self):
         return f"Bojovnik jmenem {self.__jmeno}."
@@ -30,23 +30,42 @@ class Bojovnik:
 
     def utok(self, souper):
         uder = self.__utok + self.__kostka.hod()
-        print(f"{self} utoci na {souper} silou {uder}")
+        self._zprava = f"{self.__jmeno} utoci na {souper.__jmeno} silou {uder}."
         souper.obrana(uder)
 
     def obrana(self, uder):
         obrana = self.__obrana + self.__kostka.hod()
-        print(f"{self} se brani uderu {uder} obranou {obrana}")
         zraneni = uder - obrana
-        print(f"{self} ma zraneni {zraneni}")
         if zraneni > 0:
+            self._zprava = f"{self.__jmeno} utrpel zraneni o sile {zraneni}."
             self.__zivot = self.__zivot - zraneni
+            if self.__zivot <= 0:
+                self.__zivot = 0
+                self._zprava = self._zprava[:-1] + " a zemrel."
         else:
-            print(f"{self} odrazil utok.")
+            self._zprava = f"{self.__jmeno} zcela odrazil utok."
+    
+    def setZprava(self, zprava):
+        self._zprava = zprava
+    
+    def getZprava(self):
+        return self._zprava
 
 if __name__ == "__main__":
     k = kostka.Kostka(50)
-    b = Bojovnik("Adam", 100, 80, 80, k)
-    c = Bojovnik("Eva", 150, 40, 60, k)
-    print(c.graficky_zivot())    
-    b.utok(c)
-    print(c.graficky_zivot())
+    adam = Bojovnik("Adam", 100, 80, 80, k)
+    eva = Bojovnik("Eva", 150, 40, 60, k)
+
+    while adam.nazivu and eva.nazivu:
+        adam.utok(eva)
+        print(adam.getZprava())
+        print(eva.getZprava())
+        print(eva.graficky_zivot())
+        
+        if eva.nazivu:
+            eva.utok(adam)
+            print(eva.getZprava())
+            print(adam.getZprava())
+            print(adam.graficky_zivot())
+
+
